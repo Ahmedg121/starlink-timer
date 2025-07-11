@@ -2,16 +2,67 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Multi Timer</title>
+  <title>Advanced Timers</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; direction: ltr; }
-    .user { margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+      color: #333;
+      transition: all 0.3s;
+    }
+
+    .dark-mode {
+      background: #121212;
+      color: #f5f5f5;
+    }
+
+    .user {
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      transition: background 0.3s;
+    }
+
+    .dark-mode .user {
+      background: #1f1f1f;
+      border-color: #333;
+    }
+
+    .info { flex: 1; }
     .name { font-weight: bold; }
     .timer { font-size: 1.5em; color: green; }
+    .timer.ended { color: red; }
+
+    .btn {
+      margin-left: 5px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .delete-btn { background: #f44336; color: white; }
+    .reset-btn  { background: #2196F3; color: white; }
+    .mode-btn   { background: #000; color: #fff; margin-bottom: 20px; }
     form { margin-bottom: 20px; }
+
+    .history {
+      margin-top: 30px;
+      border-top: 1px solid #aaa;
+      padding-top: 10px;
+      font-size: 0.9em;
+    }
   </style>
 </head>
 <body>
+
+  <button class="btn mode-btn" onclick="toggleDarkMode()">Toggle Night Mode</button>
 
   <h2>Add New Timer</h2>
   <form id="addTimerForm">
@@ -26,52 +77,117 @@
   <h2>Active Timers</h2>
   <div id="userList"></div>
 
+  <div class="history">
+    <h3>Finished Timers</h3>
+    <ul id="historyList"></ul>
+  </div>
+
   <audio id="alarmSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
   <script>
     const form = document.getElementById("addTimerForm");
     const userList = document.getElementById("userList");
+    const historyList = document.getElementById("historyList");
     const alarm = document.getElementById("alarmSound");
 
     let timers = JSON.parse(localStorage.getItem("timers")) || [];
+    let history = JSON.parse(localStorage.getItem("history")) || [];
 
-    function saveTimers() {
+    function saveData() {
       localStorage.setItem("timers", JSON.stringify(timers));
+      localStorage.setItem("history", JSON.stringify(history));
     }
 
-    function createTimerElement(user) {
-      const userDiv = document.createElement("div");
-      userDiv.className = "user";
+    function deleteTimer(index) {
+      timers.splice(index, 1);
+      saveData();
+      renderTimers();
+    }
 
-      const name = document.createElement("div");
-      name.className = "name";
-      name.textContent = user.name;
+    function resetTimer(index) {
+      const duration = timers[index].duration;
+      timers[index].endTime = Date.now() + duration * 60 * 1000;
+      saveData();
+      renderTimers();
+    }
 
-      const timer = document.createElement("div");
-      timer.className = "timer";
-      userDiv.appendChild(name);
-      userDiv.appendChild(timer);
-      userList.appendChild(userDiv);
+    function addToHistory(name) {
+      history.push({ name, time: new Date().toLocaleString() });
+      saveData();
+      renderHistory();
+    }
 
-      function updateTimer() {
-        const remaining = Math.floor((user.endTime - Date.now()) / 1000);
-        if (remaining <= 0) {
-          timer.textContent = "Time's up ❌";
-          timer.style.color = "#f00";
-          alarm.play();
-          clearInterval(interval);
-        } else {
-          const m = Math.floor(remaining / 60);
-          const s = remaining % 60;
-          timer.textContent = `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    function renderHistory() {
+      historyList.innerHTML = "";
+      history.forEach(h => {
+        const li = document.createElement("li");
+        li.textContent = `${h.name} - ${h.time}`;
+        historyList.appendChild(li);
+      });
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    function renderTimers() {
+      userList.innerHTML = "";
+
+      // Sort timers by remaining time
+      timers.sort((a, b) => a.endTime - b.endTime);
+
+      timers.forEach((user, index) => {
+        const userDiv = document.createElement("div");
+        userDiv.className = "user";
+
+        const infoDiv = document.createElement("div");
+        infoDiv.className = "info";
+
+        const name = document.createElement("div");
+        name.className = "name";
+        name.textContent = user.name;
+
+        const timer = document.createElement("div");
+        timer.className = "timer";
+
+        infoDiv.appendChild(name);
+        infoDiv.appendChild(timer);
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "btn delete-btn";
+        deleteBtn.textContent = "Delete";
+        deleteBtn.onclick = () => deleteTimer(index);
+
+        const resetBtn = document.createElement("button");
+        resetBtn.className = "btn reset-btn";
+        resetBtn.textContent = "Reset";
+        resetBtn.onclick = () => resetTimer(index);
+
+        userDiv.appendChild(infoDiv);
+        userDiv.appendChild(resetBtn);
+        userDiv.appendChild(deleteBtn);
+        userList.appendChild(userDiv);
+
+        function updateTimer() {
+          const remaining = Math.floor((user.endTime - Date.now()) / 1000);
+          if (remaining <= 0) {
+            timer.textContent = "Time's up ❌";
+            timer.classList.add("ended");
+            alarm.play();
+            addToHistory(user.name);
+            deleteTimer(index);
+            clearInterval(interval);
+          } else {
+            const m = Math.floor(remaining / 60);
+            const s = remaining % 60;
+            timer.textContent = `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+          }
         }
-      }
 
-      updateTimer();
-      const interval = setInterval(updateTimer, 1000);
+        updateTimer();
+        const interval = setInterval(updateTimer, 1000);
+      });
     }
-
-    timers.forEach(createTimerElement);
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -80,12 +196,15 @@
       if (!name) return;
 
       const endTime = Date.now() + duration * 60 * 1000;
-      const newTimer = { name, endTime };
+      const newTimer = { name, endTime, duration };
       timers.push(newTimer);
-      saveTimers();
-      createTimerElement(newTimer);
+      saveData();
+      renderTimers();
       form.reset();
     });
+
+    renderTimers();
+    renderHistory();
   </script>
 </body>
 </html>
