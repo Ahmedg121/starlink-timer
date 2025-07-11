@@ -24,11 +24,13 @@
 }
 
 form {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
   margin-bottom: 30px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 input, select, button {
@@ -36,10 +38,6 @@ input, select, button {
   font-size: 1rem;
   border-radius: 5px;
   border: none;
-}
-
-input, select {
-  min-width: 150px;
 }
 
 button {
@@ -56,6 +54,8 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .name {
@@ -64,6 +64,12 @@ button {
   padding: 6px 12px;
   border-radius: 5px;
   font-weight: bold;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .timer {
@@ -106,7 +112,10 @@ button {
       <option value="60">60 Minutes</option>
     </select>
     <button type="submit">Start</button>
-  </form>  <div id="userList"></div>  <div class="history">
+  </form>  <div style="text-align: center; margin-bottom: 15px;">
+    <button onclick="pauseAllTimers()">⏸️ Pause All</button>
+    <button onclick="resumeAllTimers()">▶️ Resume All</button>
+  </div>  <div id="userList"></div>  <div class="history">
     <h3>Finished Timers:</h3>
     <ul id="historyList"></ul>
     <div class="total-income" id="totalIncome"></div>
@@ -122,6 +131,8 @@ button {
 
     let timers = JSON.parse(localStorage.getItem("timers")) || [];
     let history = JSON.parse(localStorage.getItem("history")) || [];
+    let intervals = [];
+    let pausedTimers = [];
 
     function saveData() {
       localStorage.setItem("timers", JSON.stringify(timers));
@@ -158,22 +169,48 @@ button {
       totalIncome.textContent = `Total: ${total} SDG`;
     }
 
+    function pauseAllTimers() {
+      intervals.forEach(clearInterval);
+      intervals = [];
+    }
+
+    function resumeAllTimers() {
+      renderTimers();
+    }
+
     function renderTimers() {
       userList.innerHTML = "";
+      intervals.forEach(clearInterval);
+      intervals = [];
+
       timers.forEach((user, index) => {
         const userDiv = document.createElement("div");
         userDiv.className = "user";
 
-        const name = document.createElement("div");
+        const name = document.createElement("input");
         name.className = "name";
-        name.textContent = `${user.name} - ${user.amount} SDG`;
+        name.value = `${user.name} - ${user.amount} SDG`;
+        name.readOnly = true;
+        name.style.width = '250px';
 
         const timer = document.createElement("div");
         timer.className = "timer";
 
-        userDiv.appendChild(name);
-        userDiv.appendChild(timer);
-        userList.appendChild(userDiv);
+        const controls = document.createElement("div");
+        controls.className = "controls";
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "❌ Delete";
+        deleteBtn.onclick = () => deleteTimer(index);
+
+        const pauseBtn = document.createElement("button");
+        pauseBtn.textContent = "⏸️ Pause";
+
+        const resumeBtn = document.createElement("button");
+        resumeBtn.textContent = "▶️ Resume";
+        resumeBtn.style.display = "none";
+
+        let interval;
 
         function updateTimer() {
           const remaining = Math.floor((user.endTime - Date.now()) / 1000);
@@ -191,8 +228,34 @@ button {
           }
         }
 
+        interval = setInterval(updateTimer, 1000);
+        intervals.push(interval);
+
+        pauseBtn.onclick = () => {
+          clearInterval(interval);
+          pauseBtn.style.display = "none";
+          resumeBtn.style.display = "inline";
+          user.remainingTime = user.endTime - Date.now();
+        };
+
+        resumeBtn.onclick = () => {
+          user.endTime = Date.now() + user.remainingTime;
+          interval = setInterval(updateTimer, 1000);
+          intervals.push(interval);
+          pauseBtn.style.display = "inline";
+          resumeBtn.style.display = "none";
+        };
+
+        controls.appendChild(pauseBtn);
+        controls.appendChild(resumeBtn);
+        controls.appendChild(deleteBtn);
+
+        userDiv.appendChild(name);
+        userDiv.appendChild(timer);
+        userDiv.appendChild(controls);
+        userList.appendChild(userDiv);
+
         updateTimer();
-        const interval = setInterval(updateTimer, 1000);
       });
     }
 
