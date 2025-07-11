@@ -1,268 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>STARLINK KUTRANG - Advanced Timers</title>
+  <title>STARLINK KUTRANG - Timers</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
       margin: 0;
       padding: 20px;
-      min-height: 100vh;
-      background:
-        linear-gradient(rgba(10, 25, 47, 0.85), rgba(10, 25, 47, 0.85)),
-        url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
-      background-size: cover;
+      background: #0e1a2b;
       color: #d0d7f9;
-      transition: background-color 0.3s, color 0.3s;
-    }
+    }h1 {
+  font-size: 3rem;
+  text-align: center;
+  color: #70a1ff;
+}
 
-    h1 {
-      font-size: 3.5rem;
-      margin-bottom: 0;
-      letter-spacing: 4px;
-      text-align: center;
-      font-weight: 900;
-      text-shadow: 0 0 8px #70a1ffaa;
-    }
+.signature {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #7a8cc7;
+  font-style: italic;
+  margin-bottom: 30px;
+}
 
-    h2 {
-      margin-top: 40px;
-      margin-bottom: 15px;
-      font-weight: 700;
-      text-align: center;
-      color: #a0b9ff;
-      text-shadow: 0 0 4px #3557ffbb;
-    }
+form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
 
-    .signature {
-      text-align: center;
-      font-size: 1rem;
-      color: #7a8cc7;
-      font-style: italic;
-      margin-top: 4px;
-      margin-bottom: 20px;
-      user-select: none;
-      letter-spacing: 2px;
-      text-shadow: 0 0 3px #5d6dccbb;
-    }
+input, select, button {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: none;
+}
 
-    form {
-      max-width: 380px;
-      margin: 0 auto;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-      background: rgba(25, 38, 70, 0.6);
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 12px #3d59ff88;
-    }
+input, select {
+  min-width: 150px;
+}
 
-    input[type="text"], select {
-      flex: 1 1 100%;
-      padding: 10px 12px;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      outline: none;
-      color: #222;
-    }
+button {
+  background-color: #4169e1;
+  color: white;
+  cursor: pointer;
+}
 
-    button[type="submit"] {
-      padding: 12px 20px;
-      background: #4169e1;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-      flex: 1 1 100%;
-      transition: background-color 0.3s ease;
-    }
+.user {
+  background: #1f2f47;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    button[type="submit"]:hover {
-      background: #2c3db8;
-    }
+.name {
+  background: #f0f0f0;
+  color: #222;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-weight: bold;
+}
 
-    #userList {
-      max-width: 700px;
-      margin: 30px auto 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+.timer {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
 
-    .user {
-      background: rgba(25, 38, 70, 0.8);
-      border-radius: 12px;
-      padding: 16px 20px;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 0 10px #4169e1aa;
-      transition: background 0.3s;
-    }
+.ended {
+  color: #ff4c4c;
+}
 
-    .user:hover {
-      background: rgba(30, 45, 85, 1);
-    }
+.history {
+  margin-top: 30px;
+}
 
-    .info {
-      flex: 1 1 280px;
-      min-width: 280px;
-      color: #c6d0ff;
-      user-select: none;
-    }
+.history ul {
+  list-style: none;
+  padding: 0;
+}
 
-    .name-editable {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #f0f8ff;
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid transparent;
-      outline: none;
-      width: 100%;
-      max-width: 220px;
-      transition: border-color 0.3s;
-      cursor: text;
-    }
+.history li {
+  margin-bottom: 5px;
+}
 
-    .name-editable:focus {
-      border-color: #70a1ff;
-      background: rgba(255 255 255 / 0.1);
-      color: #e0f0ff;
-      border-radius: 4px;
-    }
+.total-income {
+  margin-top: 15px;
+  font-weight: bold;
+  color: #90ee90;
+}
 
-    .times {
-      font-size: 0.9rem;
-      margin-top: 4px;
-      color: #8ab0ffbb;
-      user-select: text;
-    }
-
-    .timer {
-      font-size: 2rem;
-      font-weight: 900;
-      color: #7cff88;
-      min-width: 110px;
-      text-align: center;
-      user-select: none;
-    }
-
-    .timer.ended {
-      color: #ff6b6b;
-      text-shadow: 0 0 8px #ff4c4c;
-    }
-
-    .btn {
-      margin-left: 10px;
-      padding: 8px 14px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: #fff;
-      flex-shrink: 0;
-      transition: background-color 0.3s ease;
-      user-select: none;
-    }
-
-    .delete-btn {
-      background: #e74c3c;
-    }
-    .delete-btn:hover {
-      background: #c0392b;
-    }
-
-    .reset-btn {
-      background: #3498db;
-    }
-    .reset-btn:hover {
-      background: #217dbb;
-    }
-
-    .mode-btn {
-      display: block;
-      margin: 10px auto 30px auto;
-      padding: 12px 24px;
-      background: #1e2a78;
-      border-radius: 10px;
-      border: none;
-      color: #a9c1ff;
-      font-size: 1rem;
-      cursor: pointer;
-      user-select: none;
-      box-shadow: 0 0 10px #3459e8bb;
-      transition: background-color 0.3s ease;
-    }
-    .mode-btn:hover {
-      background: #253990;
-    }
-
-    .history {
-      max-width: 700px;
-      margin: 40px auto 60px auto;
-      padding-top: 20px;
-      border-top: 1px solid #4965c8;
-      color: #9eb2ff;
-      font-size: 0.95rem;
-      user-select: text;
-    }
-    .history h3 {
-      text-align: center;
-      margin-bottom: 15px;
-      font-weight: 700;
-      color: #bbc8ff;
-      text-shadow: 0 0 6px #7186d6bb;
-    }
-    .history ul {
-      list-style: none;
-      padding: 0 12px;
-    }
-    .history li {
-      margin-bottom: 6px;
-      border-bottom: 1px dotted #5575d3aa;
-      padding-bottom: 6px;
-    }
   </style>
 </head>
 <body>
-
   <h1>STARLINK KUTRANG</h1>
-  <div class="signature">من تصميم AHMED GALLAL</div>
-
-  <button class="btn mode-btn" onclick="toggleDarkMode()">Toggle Night Mode</button>
-
-  <h2>إضافة مؤقت جديد</h2>
-  <form id="addTimerForm">
-    <input type="text" id="username" placeholder="اسم المستخدم" required />
+  <div class="signature">Designed by AHMED GALLAL</div>  <form id="addTimerForm">
+    <input type="text" id="username" placeholder="Username" required />
+    <input type="number" id="amount" placeholder="Amount (SDG)" required />
     <select id="duration">
-      <option value="30">30 دقيقة</option>
-      <option value="60">ساعة واحدة</option>
+      <option value="30">30 Minutes</option>
+      <option value="60">60 Minutes</option>
     </select>
-    <button type="submit">ابدأ المؤقت</button>
-  </form>
-
-  <h2>المؤقتات النشطة</h2>
-  <div id="userList"></div>
-
-  <div class="history">
-    <h3>المؤقتات المنتهية</h3>
+    <button type="submit">Start</button>
+  </form>  <div id="userList"></div>  <div class="history">
+    <h3>Finished Timers:</h3>
     <ul id="historyList"></ul>
-  </div>
-
-  <audio id="alarmSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+    <div class="total-income" id="totalIncome"></div>
+    <button onclick="clearHistory()">🗑️ Clear History</button>
+  </div><audio id="alarmSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
   <script>
     const form = document.getElementById("addTimerForm");
     const userList = document.getElementById("userList");
     const historyList = document.getElementById("historyList");
+    const totalIncome = document.getElementById("totalIncome");
     const alarm = document.getElementById("alarmSound");
 
     let timers = JSON.parse(localStorage.getItem("timers")) || [];
@@ -279,90 +134,54 @@
       renderTimers();
     }
 
-    function resetTimer(index) {
-      const duration = timers[index].duration;
-      timers[index].endTime = Date.now() + duration * 60 * 1000;
-      timers[index].startTime = Date.now();
+    function clearHistory() {
+      history = [];
       saveData();
-      renderTimers();
+      renderHistory();
     }
 
-    function addToHistory(name) {
-      history.push({ name, time: new Date().toLocaleString() });
+    function addToHistory(name, amount) {
+      history.push({ name, amount, time: new Date().toLocaleTimeString() });
       saveData();
       renderHistory();
     }
 
     function renderHistory() {
       historyList.innerHTML = "";
+      let total = 0;
       history.forEach(h => {
+        total += parseFloat(h.amount);
         const li = document.createElement("li");
-        li.textContent = `${h.name} - ${h.time}`;
+        li.textContent = `${h.name} - ${h.amount} SDG - ${h.time}`;
         historyList.appendChild(li);
       });
-    }
-
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark-mode");
+      totalIncome.textContent = `Total: ${total} SDG`;
     }
 
     function renderTimers() {
       userList.innerHTML = "";
-
-      timers.sort((a, b) => a.endTime - b.endTime);
-
       timers.forEach((user, index) => {
         const userDiv = document.createElement("div");
         userDiv.className = "user";
 
-        const infoDiv = document.createElement("div");
-        infoDiv.className = "info";
-
-        const nameInput = document.createElement("input");
-        nameInput.type = "text";
-        nameInput.className = "name-editable";
-        nameInput.value = user.name;
-        nameInput.onchange = () => {
-          timers[index].name = nameInput.value.trim() || "بدون اسم";
-          saveData();
-          renderTimers();
-        };
-
-        const timesDiv = document.createElement("div");
-        timesDiv.className = "times";
-        const start = new Date(user.startTime || (user.endTime - user.duration * 60 * 1000));
-        const end = new Date(user.endTime);
-        timesDiv.textContent = `بدأ: ${start.toLocaleTimeString()} - ينتهي: ${end.toLocaleTimeString()}`;
-
-        infoDiv.appendChild(nameInput);
-        infoDiv.appendChild(timesDiv);
+        const name = document.createElement("div");
+        name.className = "name";
+        name.textContent = `${user.name} - ${user.amount} SDG`;
 
         const timer = document.createElement("div");
         timer.className = "timer";
 
-        const deleteBtn = document.createElement("button");
-        deleteBtn.className = "btn delete-btn";
-        deleteBtn.textContent = "حذف";
-        deleteBtn.onclick = () => deleteTimer(index);
-
-        const resetBtn = document.createElement("button");
-        resetBtn.className = "btn reset-btn";
-        resetBtn.textContent = "إعادة تعيين";
-        resetBtn.onclick = () => resetTimer(index);
-
-        userDiv.appendChild(infoDiv);
+        userDiv.appendChild(name);
         userDiv.appendChild(timer);
-        userDiv.appendChild(resetBtn);
-        userDiv.appendChild(deleteBtn);
         userList.appendChild(userDiv);
 
         function updateTimer() {
           const remaining = Math.floor((user.endTime - Date.now()) / 1000);
           if (remaining <= 0) {
-            timer.textContent = "انتهى الوقت ❌";
+            timer.textContent = "Time's up ❌";
             timer.classList.add("ended");
             alarm.play();
-            addToHistory(user.name);
+            addToHistory(user.name, user.amount);
             deleteTimer(index);
             clearInterval(interval);
           } else {
@@ -380,13 +199,10 @@
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       const name = document.getElementById("username").value.trim();
+      const amount = document.getElementById("amount").value.trim();
       const duration = parseInt(document.getElementById("duration").value);
-      if (!name) return;
-
-      const now = Date.now();
-      const endTime = now + duration * 60 * 1000;
-      const newTimer = { name, endTime, duration, startTime: now };
-      timers.push(newTimer);
+      const endTime = Date.now() + duration * 60 * 1000;
+      timers.push({ name, amount, endTime, duration });
       saveData();
       renderTimers();
       form.reset();
@@ -394,6 +210,5 @@
 
     renderTimers();
     renderHistory();
-  </script>
-</body>
+  </script></body>
 </html>
