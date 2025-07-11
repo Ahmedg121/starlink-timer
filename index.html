@@ -2,83 +2,258 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Advanced Timers</title>
+  <title>STARLINK KUTRANG - Advanced Timers</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
       padding: 20px;
-      background: #f5f5f5;
-      color: #333;
-      transition: all 0.3s;
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(10, 25, 47, 0.85), rgba(10, 25, 47, 0.85)),
+        url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #d0d7f9;
+      transition: background-color 0.3s, color 0.3s;
     }
 
-    .dark-mode {
-      background: #121212;
-      color: #f5f5f5;
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 0;
+      letter-spacing: 4px;
+      text-align: center;
+      font-weight: 900;
+      text-shadow: 0 0 8px #70a1ffaa;
+    }
+
+    h2 {
+      margin-top: 40px;
+      margin-bottom: 15px;
+      font-weight: 700;
+      text-align: center;
+      color: #a0b9ff;
+      text-shadow: 0 0 4px #3557ffbb;
+    }
+
+    .signature {
+      text-align: center;
+      font-size: 1rem;
+      color: #7a8cc7;
+      font-style: italic;
+      margin-top: 4px;
+      margin-bottom: 20px;
+      user-select: none;
+      letter-spacing: 2px;
+      text-shadow: 0 0 3px #5d6dccbb;
+    }
+
+    form {
+      max-width: 380px;
+      margin: 0 auto;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: rgba(25, 38, 70, 0.6);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 12px #3d59ff88;
+    }
+
+    input[type="text"], select {
+      flex: 1 1 100%;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      outline: none;
+      color: #222;
+    }
+
+    button[type="submit"] {
+      padding: 12px 20px;
+      background: #4169e1;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      flex: 1 1 100%;
+      transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+      background: #2c3db8;
+    }
+
+    #userList {
+      max-width: 700px;
+      margin: 30px auto 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
     }
 
     .user {
-      margin: 10px 0;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      background: rgba(25, 38, 70, 0.8);
+      border-radius: 12px;
+      padding: 16px 20px;
       display: flex;
-      justify-content: space-between;
+      flex-wrap: wrap;
       align-items: center;
-      background: white;
+      justify-content: space-between;
+      box-shadow: 0 0 10px #4169e1aa;
       transition: background 0.3s;
     }
 
-    .dark-mode .user {
-      background: #1f1f1f;
-      border-color: #333;
+    .user:hover {
+      background: rgba(30, 45, 85, 1);
     }
 
-    .info { flex: 1; }
-    .name { font-weight: bold; }
-    .timer { font-size: 1.5em; color: green; }
-    .timer.ended { color: red; }
+    .info {
+      flex: 1 1 280px;
+      min-width: 280px;
+      color: #c6d0ff;
+      user-select: none;
+    }
+
+    .name-editable {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #f0f8ff;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      outline: none;
+      width: 100%;
+      max-width: 220px;
+      transition: border-color 0.3s;
+      cursor: text;
+    }
+
+    .name-editable:focus {
+      border-color: #70a1ff;
+      background: rgba(255 255 255 / 0.1);
+      color: #e0f0ff;
+      border-radius: 4px;
+    }
+
+    .times {
+      font-size: 0.9rem;
+      margin-top: 4px;
+      color: #8ab0ffbb;
+      user-select: text;
+    }
+
+    .timer {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #7cff88;
+      min-width: 110px;
+      text-align: center;
+      user-select: none;
+    }
+
+    .timer.ended {
+      color: #ff6b6b;
+      text-shadow: 0 0 8px #ff4c4c;
+    }
 
     .btn {
-      margin-left: 5px;
-      padding: 5px 10px;
+      margin-left: 10px;
+      padding: 8px 14px;
       border: none;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #fff;
+      flex-shrink: 0;
+      transition: background-color 0.3s ease;
+      user-select: none;
     }
 
-    .delete-btn { background: #f44336; color: white; }
-    .reset-btn  { background: #2196F3; color: white; }
-    .mode-btn   { background: #000; color: #fff; margin-bottom: 20px; }
-    form { margin-bottom: 20px; }
+    .delete-btn {
+      background: #e74c3c;
+    }
+    .delete-btn:hover {
+      background: #c0392b;
+    }
+
+    .reset-btn {
+      background: #3498db;
+    }
+    .reset-btn:hover {
+      background: #217dbb;
+    }
+
+    .mode-btn {
+      display: block;
+      margin: 10px auto 30px auto;
+      padding: 12px 24px;
+      background: #1e2a78;
+      border-radius: 10px;
+      border: none;
+      color: #a9c1ff;
+      font-size: 1rem;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 0 10px #3459e8bb;
+      transition: background-color 0.3s ease;
+    }
+    .mode-btn:hover {
+      background: #253990;
+    }
 
     .history {
-      margin-top: 30px;
-      border-top: 1px solid #aaa;
-      padding-top: 10px;
-      font-size: 0.9em;
+      max-width: 700px;
+      margin: 40px auto 60px auto;
+      padding-top: 20px;
+      border-top: 1px solid #4965c8;
+      color: #9eb2ff;
+      font-size: 0.95rem;
+      user-select: text;
+    }
+    .history h3 {
+      text-align: center;
+      margin-bottom: 15px;
+      font-weight: 700;
+      color: #bbc8ff;
+      text-shadow: 0 0 6px #7186d6bb;
+    }
+    .history ul {
+      list-style: none;
+      padding: 0 12px;
+    }
+    .history li {
+      margin-bottom: 6px;
+      border-bottom: 1px dotted #5575d3aa;
+      padding-bottom: 6px;
     }
   </style>
 </head>
 <body>
 
+  <h1>STARLINK KUTRANG</h1>
+  <div class="signature">من تصميم AHMED GALLAL</div>
+
   <button class="btn mode-btn" onclick="toggleDarkMode()">Toggle Night Mode</button>
 
-  <h2>Add New Timer</h2>
+  <h2>إضافة مؤقت جديد</h2>
   <form id="addTimerForm">
-    <input type="text" id="username" placeholder="Username" required />
+    <input type="text" id="username" placeholder="اسم المستخدم" required />
     <select id="duration">
-      <option value="30">30 Minutes</option>
-      <option value="60">1 Hour</option>
+      <option value="30">30 دقيقة</option>
+      <option value="60">ساعة واحدة</option>
     </select>
-    <button type="submit">Start Timer</button>
+    <button type="submit">ابدأ المؤقت</button>
   </form>
 
-  <h2>Active Timers</h2>
+  <h2>المؤقتات النشطة</h2>
   <div id="userList"></div>
 
   <div class="history">
-    <h3>Finished Timers</h3>
+    <h3>المؤقتات المنتهية</h3>
     <ul id="historyList"></ul>
   </div>
 
@@ -107,6 +282,7 @@
     function resetTimer(index) {
       const duration = timers[index].duration;
       timers[index].endTime = Date.now() + duration * 60 * 1000;
+      timers[index].startTime = Date.now();
       saveData();
       renderTimers();
     }
@@ -133,7 +309,6 @@
     function renderTimers() {
       userList.innerHTML = "";
 
-      // Sort timers by remaining time
       timers.sort((a, b) => a.endTime - b.endTime);
 
       timers.forEach((user, index) => {
@@ -143,27 +318,40 @@
         const infoDiv = document.createElement("div");
         infoDiv.className = "info";
 
-        const name = document.createElement("div");
-        name.className = "name";
-        name.textContent = user.name;
+        const nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.className = "name-editable";
+        nameInput.value = user.name;
+        nameInput.onchange = () => {
+          timers[index].name = nameInput.value.trim() || "بدون اسم";
+          saveData();
+          renderTimers();
+        };
+
+        const timesDiv = document.createElement("div");
+        timesDiv.className = "times";
+        const start = new Date(user.startTime || (user.endTime - user.duration * 60 * 1000));
+        const end = new Date(user.endTime);
+        timesDiv.textContent = `بدأ: ${start.toLocaleTimeString()} - ينتهي: ${end.toLocaleTimeString()}`;
+
+        infoDiv.appendChild(nameInput);
+        infoDiv.appendChild(timesDiv);
 
         const timer = document.createElement("div");
         timer.className = "timer";
 
-        infoDiv.appendChild(name);
-        infoDiv.appendChild(timer);
-
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "btn delete-btn";
-        deleteBtn.textContent = "Delete";
+        deleteBtn.textContent = "حذف";
         deleteBtn.onclick = () => deleteTimer(index);
 
         const resetBtn = document.createElement("button");
         resetBtn.className = "btn reset-btn";
-        resetBtn.textContent = "Reset";
+        resetBtn.textContent = "إعادة تعيين";
         resetBtn.onclick = () => resetTimer(index);
 
         userDiv.appendChild(infoDiv);
+        userDiv.appendChild(timer);
         userDiv.appendChild(resetBtn);
         userDiv.appendChild(deleteBtn);
         userList.appendChild(userDiv);
@@ -171,7 +359,7 @@
         function updateTimer() {
           const remaining = Math.floor((user.endTime - Date.now()) / 1000);
           if (remaining <= 0) {
-            timer.textContent = "Time's up ❌";
+            timer.textContent = "انتهى الوقت ❌";
             timer.classList.add("ended");
             alarm.play();
             addToHistory(user.name);
@@ -195,8 +383,9 @@
       const duration = parseInt(document.getElementById("duration").value);
       if (!name) return;
 
-      const endTime = Date.now() + duration * 60 * 1000;
-      const newTimer = { name, endTime, duration };
+      const now = Date.now();
+      const endTime = now + duration * 60 * 1000;
+      const newTimer = { name, endTime, duration, startTime: now };
       timers.push(newTimer);
       saveData();
       renderTimers();
