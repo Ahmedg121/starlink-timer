@@ -1,43 +1,91 @@
-<script>
-  const timers = [
-    // الوقت هنا مكتوب كثابت: "تاريخ انتهاء"
-    { name: "Ahmed", endTime: new Date("2025-07-11T13:00:00Z").getTime() },
-    { name: "Sarah", endTime: new Date("2025-07-11T12:45:00Z").getTime() },
-    { name: "John",  endTime: new Date("2025-07-11T13:15:00Z").getTime() }
-  ];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Multi Timer</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; direction: ltr; }
+    .user { margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+    .name { font-weight: bold; }
+    .timer { font-size: 1.5em; color: green; }
+    form { margin-bottom: 20px; }
+  </style>
+</head>
+<body>
 
-  const userList = document.getElementById("userList");
+  <h2>Add New Timer</h2>
+  <form id="addTimerForm">
+    <input type="text" id="username" placeholder="Username" required />
+    <select id="duration">
+      <option value="30">30 Minutes</option>
+      <option value="60">1 Hour</option>
+    </select>
+    <button type="submit">Start Timer</button>
+  </form>
 
-  function createTimerElement(user) {
-    const userDiv = document.createElement("div");
-    userDiv.className = "user";
+  <h2>Active Timers</h2>
+  <div id="userList"></div>
 
-    const name = document.createElement("div");
-    name.className = "name";
-    name.textContent = user.name;
+  <audio id="alarmSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
-    const timer = document.createElement("div");
-    timer.className = "timer";
-    userDiv.appendChild(name);
-    userDiv.appendChild(timer);
-    userList.appendChild(userDiv);
+  <script>
+    const form = document.getElementById("addTimerForm");
+    const userList = document.getElementById("userList");
+    const alarm = document.getElementById("alarmSound");
 
-    function updateTimer() {
-      const remaining = Math.floor((user.endTime - Date.now()) / 1000);
-      if (remaining <= 0) {
-        timer.textContent = "Time's up! ❌";
-        timer.style.color = "#f00";
-        clearInterval(interval);
-      } else {
-        const m = Math.floor(remaining / 60);
-        const s = remaining % 60;
-        timer.textContent = `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
-      }
+    let timers = JSON.parse(localStorage.getItem("timers")) || [];
+
+    function saveTimers() {
+      localStorage.setItem("timers", JSON.stringify(timers));
     }
 
-    updateTimer();
-    const interval = setInterval(updateTimer, 1000);
-  }
+    function createTimerElement(user) {
+      const userDiv = document.createElement("div");
+      userDiv.className = "user";
 
-  timers.forEach(createTimerElement);
-</script>
+      const name = document.createElement("div");
+      name.className = "name";
+      name.textContent = user.name;
+
+      const timer = document.createElement("div");
+      timer.className = "timer";
+      userDiv.appendChild(name);
+      userDiv.appendChild(timer);
+      userList.appendChild(userDiv);
+
+      function updateTimer() {
+        const remaining = Math.floor((user.endTime - Date.now()) / 1000);
+        if (remaining <= 0) {
+          timer.textContent = "Time's up ❌";
+          timer.style.color = "#f00";
+          alarm.play();
+          clearInterval(interval);
+        } else {
+          const m = Math.floor(remaining / 60);
+          const s = remaining % 60;
+          timer.textContent = `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+        }
+      }
+
+      updateTimer();
+      const interval = setInterval(updateTimer, 1000);
+    }
+
+    timers.forEach(createTimerElement);
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const name = document.getElementById("username").value.trim();
+      const duration = parseInt(document.getElementById("duration").value);
+      if (!name) return;
+
+      const endTime = Date.now() + duration * 60 * 1000;
+      const newTimer = { name, endTime };
+      timers.push(newTimer);
+      saveTimers();
+      createTimerElement(newTimer);
+      form.reset();
+    });
+  </script>
+</body>
+</html>
