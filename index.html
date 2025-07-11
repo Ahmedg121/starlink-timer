@@ -1,40 +1,91 @@
-<script>
-  const timers = [
-    { name: "Ahmed", endTime: Date.now() + 90 * 60 * 1000 }, // 90 دقيقة
-    { name: "Sarah", endTime: Date.now() + 45 * 60 * 1000 },
-    { name: "John",  endTime: Date.now() + 60 * 60 * 1000 }
-  ];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Starlink Timers</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      margin: 0;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      color: #0ff;
+    }
+    .user-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .user {
+      background: #222;
+      border: 2px solid #0ff;
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+    .name {
+      font-weight: bold;
+      font-size: 1.4rem;
+    }
+    .timer {
+      color: #0f0;
+      font-size: 1.6rem;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌐 Starlink Timers</h1>
+  <div class="user-list" id="userList"></div>
 
-  const userList = document.getElementById("userList");
+  <script>
+    const timers = [
+      { name: "Ahmed", endTime: Date.now() + 90 * 60 * 1000 }, // 90 دقيقة
+      { name: "Sarah", endTime: Date.now() + 45 * 60 * 1000 },
+      { name: "John",  endTime: Date.now() + 60 * 60 * 1000 }
+    ];
 
-  function createTimerElement(user) {
-    const userDiv = document.createElement("div");
-    userDiv.className = "user";
+    const userList = document.getElementById("userList");
 
-    const name = document.createElement("div");
-    name.className = "name";
-    name.textContent = user.name;
+    function createTimerElement(user) {
+      const userDiv = document.createElement("div");
+      userDiv.className = "user";
 
-    const timer = document.createElement("div");
-    timer.className = "timer";
+      const name = document.createElement("div");
+      name.className = "name";
+      name.textContent = user.name;
 
-    userDiv.appendChild(name);
-    userDiv.appendChild(timer);
-    userList.appendChild(userDiv);
+      const timer = document.createElement("div");
+      timer.className = "timer";
+      userDiv.appendChild(name);
+      userDiv.appendChild(timer);
+      userList.appendChild(userDiv);
 
-    const interval = setInterval(() => {
-      const remaining = Math.floor((user.endTime - Date.now()) / 1000);
-      if (remaining <= 0) {
-        timer.textContent = "Time's up! ❌";
-        timer.style.color = "#f00";
-        clearInterval(interval);
-      } else {
-        const m = Math.floor(remaining / 60);
-        const s = remaining % 60;
-        timer.textContent = `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+      function updateTimer() {
+        const remaining = Math.floor((user.endTime - Date.now()) / 1000);
+        if (remaining <= 0) {
+          timer.textContent = "Time's up! ❌";
+          timer.style.color = "#f00";
+          clearInterval(interval);
+        } else {
+          const m = Math.floor(remaining / 60);
+          const s = remaining % 60;
+          timer.textContent = `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+        }
       }
-    }, 1000);
-  }
 
-  timers.forEach(createTimerElement);
-</script>
+      updateTimer();
+      const interval = setInterval(updateTimer, 1000);
+    }
+
+    timers.forEach(createTimerElement);
+  </script>
+</body>
+</html>
